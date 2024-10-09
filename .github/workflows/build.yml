@@ -1,0 +1,44 @@
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: macos-latest
+    permissions: write-all
+
+    env:
+      APP_NAME: "Home Screen Layout"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1.6.0
+        with:
+          xcode-version: '16.0'
+
+      - name: Build
+        run: |
+          xcodebuild -scheme "${{ env.APP_NAME }}" \
+                     -sdk appletvos \
+                     -configuration Release \
+                     -archivePath "${{ github.workspace }}/build/${{ env.APP_NAME }}.xcarchive" \
+                     -allowProvisioningUpdates \
+                     archive \
+                     CODE_SIGNING_REQUIRED=NO \
+                     AD_HOC_CODE_SIGNING_ALLOWED=YES \
+                     CODE_SIGNING_ALLOWED=NO
+
+      - name: Convert to IPA
+        run: |
+          mkdir Payload
+          cp -pR "${{ github.workspace }}/build/${{ env.APP_NAME }}.xcarchive/Products/Applications/${{ env.APP_NAME }}.app" "Payload/${{ env.APP_NAME }}.app"
+          zip -r "Home_Screen_Layout.ipa" Payload
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Home_Screen_Layout.ipa

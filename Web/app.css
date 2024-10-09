@@ -1,0 +1,175 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: radial-gradient(circle at 50% 50%, #2e2f30, #0c0d0e),
+              radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0)),
+              radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0));
+  background-blend-mode: overlay;
+  min-height: 100vh;
+}
+
+.loading {
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 24px;
+}
+
+button, select {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #333;
+  color: #fff;
+  cursor: pointer;
+  appearance: none;
+}
+
+.container {
+  width: 1360px;
+  margin: 0 auto;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.toolbar * {
+  margin: 0 10px;
+}
+
+.toolbar button.right {
+  margin-left: auto;
+}
+
+.folder-name {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background-color: #333;
+  color: #fff;
+  border-radius: 5px;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+  padding: 20px;
+  font-size: 10px;
+  position: relative;
+  min-height: 118px;
+}
+
+.grid.folder {
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0 250px;
+  background-color: rgba(0,0,0,.25);
+  border-radius: 20px;
+  margin-top: 20px;
+}
+
+.grid.folder > :nth-child(3n + 1) {
+  justify-self: start;
+}
+
+.grid.folder > :nth-child(3n + 2) {
+  justify-self: center;
+}
+
+.grid.folder > :nth-child(3n + 3) {
+  justify-self: end;
+}
+
+.main.grid::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 160px;
+  background-color: #d3d3d3;
+  z-index: -1;
+  border-bottom: 1px solid #ccc;
+  border-radius: 20px;
+  opacity: 0.25;
+}
+
+.main.grid > :nth-child(-n+6), .folder .icon {
+  margin-bottom: 20px;
+}
+
+.main.grid > :nth-child(n+7) {
+  position: relative;
+  margin-bottom: 25px;
+}
+
+.icon {
+  width: 200px;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  text-align: center;
+  border-radius: 20px;
+  position: relative;
+}
+
+@keyframes wiggle {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(2deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-2deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.icon.active {
+  animation: wiggle 0.3s ease-in-out infinite;
+}
+
+.application {
+  background-size: cover;
+  background-position: center;
+}
+
+.icon:nth-child(n+7)::before, .folder .icon::before {
+  content: attr(data-name);
+  position: absolute;
+  color: white;
+  font-size: 14px;
+  transition: opacity 0.3s;
+  bottom: -25px;
+}
+
+.icon.folder {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 4px;
+  padding: 8px;
+  background-color: rgba(0, 0, 0, .25);
+  justify-items: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.child {
+  background-color: #f0f0f0;
+  text-align: center;
+  width: 48px;
+  height: 29px;
+  border-radius: 10px;
+}

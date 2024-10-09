@@ -1,0 +1,24 @@
+{
+  "originHash" : "017ab44b788262d72e223c54c0c525525d8e21314f20cb34f36145189bfb7cda",
+  "pins" : [
+    {
+      "identity" : "privatekits-tvos",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/WhitetailAni/PrivateKits-tvOS",
+      "state" : {
+        "branch" : "main",
+        "revision" : "0fa05d7707004bd10bf3f153f0c8d6781bc462f9"
+      }
+    },
+    {
+      "identity" : "swifter",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/httpswift/swifter.git",
+      "state" : {
+        "revision" : "9483a5d459b45c3ffd059f7b55f9638e268632fd",
+        "version" : "1.5.0"
+      }
+    }
+  ],
+  "version" : 3
+}
