@@ -9,6 +9,7 @@ class HomeScreenLayout extends Component {
         this.state = {
             isLoading: true,
             items: [],
+            originalItems: [],
             icons: {},
             currentFolder: null,
             selectedAppIds: [],
@@ -25,11 +26,11 @@ class HomeScreenLayout extends Component {
 
         const apps = await fetchApps();
         if (!apps) {
-            this.setState({ isLoading: false, items: [] });
+            this.setState({ isLoading: false, items: [], originalItems: [] });
             return;
         }
         const icons = await fetchAppIcons(apps);
-        this.setState({ isLoading: false, items: apps, icons });
+        this.setState({ isLoading: false, items: apps, originalItems: structuredClone(apps), icons });
     }
 
     handleDragStart = (item) => {
@@ -185,6 +186,11 @@ class HomeScreenLayout extends Component {
 
     handleSaveButton = () => {
         saveApps(this.state.items);
+        this.setState({ originalItems: structuredClone(this.state.items) });
+    }
+
+    hasPendingChanges = () => {
+        return JSON.stringify(this.state.items) !== JSON.stringify(this.state.originalItems);
     }
 
     renderFolderBackground(items) {
@@ -238,7 +244,7 @@ class HomeScreenLayout extends Component {
                 h('option', { value: '' }, ''),
                 ...folders.map(folder => h('option', { value: folder.id }, folder.name))
             ),
-            h('button', { onClick: () => this.handleSaveButton(this.state.items), class: 'right' }, 'Save')
+            this.hasPendingChanges() && h('button', { onClick: () => this.handleSaveButton(this.state.items), class: 'right' }, 'Save')
         )
     }
 
