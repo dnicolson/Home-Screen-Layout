@@ -1,9 +1,10 @@
 #if !targetEnvironment(simulator)
 import Foundation
-import AssetCatalogWrapper
+import UIKit
 
 let APP_PATH_SYSTEM = "/Applications"
 let APP_PATH = "/var/containers/Bundle/Application"
+let APP_ICON_CACHE = "/private/var/mobile/Library/Caches/com.apple.HeadBoard/AppIconCache"
 
 class ApplicationsHelper {
     static let shared = ApplicationsHelper()
@@ -89,57 +90,20 @@ class ApplicationsHelper {
         return nil
     }
     
-//    private func getIconName(from appPath: String) -> String? {
-//        let infoPlistPath = "\(appPath)/Info.plist"
-//
-//        guard fm.fileExists(atPath: infoPlistPath), let plistData = fm.contents(atPath: infoPlistPath) else {
-//            print("Info.plist not found at path: \(infoPlistPath)")
-//            return nil
-//        }
-//        
-//        do {
-//            if let plist = try PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [String: Any],
-//               let icons = plist["CFBundleIcons"] as? [String: Any],
-//               let iconName = icons["CFBundlePrimaryIcon"] as? String {
-//                 return iconName
-//            }
-//        } catch {
-//            print("Error reading Info.plist at \(infoPlistPath): \(error)")
-//        }
-//        
-//        return nil
-//    }
-    
     func getAppName(from bundleIdentifier: String) -> String? {
         return bundleIdToName[bundleIdentifier]
     }
     
     func getAppImage(from bundleIdentifier: String) -> Data? {
-        if let bundlePath = bundleIdToPath[bundleIdentifier] {
-            let archive = URL(fileURLWithPath: bundlePath + "/Assets.car")
-            do {
-                let (_, renditionsRoot) = try AssetCatalogWrapper.shared.renditions(forCarArchive: archive)
-                for rendition in renditionsRoot {
-                    let renditions = rendition.renditions
-                    for rend in renditions {
-                        if let cgImage = rend.image {
-                            let image = UIImage(cgImage: cgImage)
-                            // AssetCatalogWrapper doesn't support layer stacks, the icon name cannot be used
-                            // getIconName(from: bundleIdToPath[bundleIdentifier])
-                            if rend.namedLookup.name.hasPrefix("ZZZZFlattenedImage") {
-                                if image.size.width == 400.0 && image.size.height == 240.0 {
-                                    return image.pngData()
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch {
-                print("Failed to retrieve renditions: \(error)")
-                return nil
-            }
+        let path = "\(APP_ICON_CACHE)/\(bundleIdentifier)"
+
+        do {
+            let loader = try IconImageLoader(from: path)
+            let image = UIImage(cgImage: try loader.loadLatestASTCImage(width: 400, height: 240))
+            return image.pngData()
+        } catch {
+            return nil
         }
-        return nil
-    }
+    }    
 }
 #endif

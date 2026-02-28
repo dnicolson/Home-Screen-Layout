@@ -10,7 +10,6 @@
 		557E60A22CA48928004DF1C8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 557E60A12CA48928004DF1C8 /* Assets.xcassets */; };
 		55D35D4F2C9A52B1007DF4A9 /* Web in Resources */ = {isa = PBXBuildFile; fileRef = 55D35D4E2C9A52B1007DF4A9 /* Web */; };
 		55EC7F522C9A006400BBF05F /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = 55EC7F512C9A006400BBF05F /* Swifter */; };
-		55FCC5F52CA725DE00A520DC /* AssetCatalogWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = 55FCC5F42CA725DE00A520DC /* AssetCatalogWrapper */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,7 +32,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				55EC7F522C9A006400BBF05F /* Swifter in Frameworks */,
-				55FCC5F52CA725DE00A520DC /* AssetCatalogWrapper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,7 +77,6 @@
 			name = "Home Screen Layout";
 			packageProductDependencies = (
 				55EC7F512C9A006400BBF05F /* Swifter */,
-				55FCC5F42CA725DE00A520DC /* AssetCatalogWrapper */,
 			);
 			productName = "Home Screen Layout";
 			productReference = 55EC7F3A2C98B67600BBF05F /* Home Screen Layout.app */;
@@ -111,7 +108,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				55EC7F502C9A006400BBF05F /* XCRemoteSwiftPackageReference "swifter" */,
-				55FCC5F32CA725DE00A520DC /* XCRemoteSwiftPackageReference "PrivateKits-tvOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 55EC7F3B2C98B67600BBF05F /* Products */;
@@ -351,14 +347,6 @@
 				minimumVersion = 1.5.0;
 			};
 		};
-		55FCC5F32CA725DE00A520DC /* XCRemoteSwiftPackageReference "PrivateKits-tvOS" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/WhitetailAni/PrivateKits-tvOS";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -366,11 +354,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 55EC7F502C9A006400BBF05F /* XCRemoteSwiftPackageReference "swifter" */;
 			productName = Swifter;
-		};
-		55FCC5F42CA725DE00A520DC /* AssetCatalogWrapper */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 55FCC5F32CA725DE00A520DC /* XCRemoteSwiftPackageReference "PrivateKits-tvOS" */;
-			productName = AssetCatalogWrapper;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
