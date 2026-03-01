@@ -53,24 +53,33 @@ class HomeScreenLayout extends Component {
 
         if (draggedItem && targetItem && draggedItem !== targetItem) {
             let newItems = structuredClone(items);
+            
+            if (targetItem.type === 'folder' && draggedItem.type !== 'folder') {
+                const draggedIndex = newItems.findIndex(item => item.id === draggedItem.id);
+                const targetFolder = newItems.find(item => item.id === targetItem.id);
+                
+                if (draggedIndex > -1 && targetFolder) {
+                    const [movedItem] = newItems.splice(draggedIndex, 1);
+                    targetFolder.children.push(movedItem);
+                    this.setState({ items: newItems, selectedAppIds: [] });
+                }
+                return;
+            }
+            
             if (currentFolder) {
-                const updatedFolder = { ...currentFolder };
-                const folderItems = [...updatedFolder.children];
-                const draggedIndex = folderItems.indexOf(draggedItem);
-                const targetIndex = folderItems.indexOf(targetItem);
+                const updatedFolder = newItems.find(item => item.id === currentFolder.id);
+                const folderItems = updatedFolder.children;
+                const draggedIndex = folderItems.findIndex(item => item.id === draggedItem.id);
+                const targetIndex = folderItems.findIndex(item => item.id === targetItem.id);
 
                 if (draggedIndex > -1 && targetIndex > -1) {
-                    folderItems.splice(draggedIndex, 1);
-                    folderItems.splice(targetIndex, 0, draggedItem);
-                    updatedFolder.children = folderItems;
-
-                    newItems = newItems.map(item =>
-                        item.id === updatedFolder.id ? { ...updatedFolder } : { ...item }
-                    );
+                    const [movedItem] = folderItems.splice(draggedIndex, 1);
+                    folderItems.splice(targetIndex, 0, movedItem);
 
                     this.setState({
                         items: newItems,
-                        currentFolder: updatedFolder
+                        currentFolder: updatedFolder,
+                        selectedAppIds: []
                     });
                 }
             } else {
@@ -78,9 +87,9 @@ class HomeScreenLayout extends Component {
                 const targetIndex = newItems.findIndex(item => item.id === targetItem.id);
 
                 if (draggedIndex > -1 && targetIndex > -1) {
-                    newItems.splice(draggedIndex, 1);
-                    newItems.splice(targetIndex, 0, draggedItem);
-                    this.setState({ items: newItems });
+                    const [movedItem] = newItems.splice(draggedIndex, 1);
+                    newItems.splice(targetIndex, 0, movedItem);
+                    this.setState({ items: newItems, selectedAppIds: [] });
                 }
             }
         }
@@ -250,7 +259,7 @@ class HomeScreenLayout extends Component {
                 return h('div', {
                     class: `icon ${item.type}${isSelected ? ' active' : ''}`,
                     style: item.type !== 'folder' && icons[item.id] ? { backgroundImage: `url(${icons[item.id].image})` } : {},
-                    draggable: isSelected,
+                    draggable: item.type === 'folder' || isSelected,
                     onClick: () => this.handleClick(item),
                     onDragStart: () => this.handleDragStart(item),
                     onDragEnd: this.handleDragEnd,
