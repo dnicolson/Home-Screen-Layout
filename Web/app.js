@@ -245,13 +245,14 @@ class HomeScreenLayout extends Component {
     renderGrid(items, className) {
         const icons = this.state.icons;
         return h('div', { class: className },
-            items.map(item =>
-                h('div', {
-                    class: `icon ${item.type}${this.state.selectedAppIds.includes(item.id) ? ' active' : ''}`,
+            items.map(item => {
+                const isSelected = this.state.selectedAppIds.includes(item.id);
+                return h('div', {
+                    class: `icon ${item.type}${isSelected ? ' active' : ''}`,
                     style: item.type !== 'folder' && icons[item.id] ? { backgroundImage: `url(${icons[item.id].image})` } : {},
-                    draggable: true,
+                    draggable: isSelected,
                     onClick: () => this.handleClick(item),
-                    onDragStart:  () => this.handleDragStart(item),
+                    onDragStart: () => this.handleDragStart(item),
                     onDragEnd: this.handleDragEnd,
                     onDragOver: e => e.preventDefault(),
                     onDragLeave: e => e.preventDefault(),
@@ -259,7 +260,7 @@ class HomeScreenLayout extends Component {
                     'data-id': item.id,
                     'data-name': item.type === 'folder' ? item.name : icons[item.id]?.name ?? item.id
                 }, item.type === 'folder' ? this.renderFolderBackground(item.children) : icons[item.id] ? '' : item.name)
-            )
+            })
         )
     }
 
