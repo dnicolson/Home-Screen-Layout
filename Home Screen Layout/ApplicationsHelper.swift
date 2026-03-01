@@ -2,8 +2,6 @@
 import Foundation
 import UIKit
 
-let APP_PATH_SYSTEM = "/Applications"
-let APP_PATH = "/var/containers/Bundle/Application"
 let APP_ICON_CACHE = "/private/var/mobile/Library/Caches/com.apple.HeadBoard/AppIconCache"
 
 class ApplicationsHelper {
@@ -21,38 +19,26 @@ class ApplicationsHelper {
     }
     
     private func loadApplications() {
-        let applicationPaths = [APP_PATH_SYSTEM, APP_PATH]
-        
-        for path in applicationPaths {
-            do {
-                let contents = try fm.contentsOfDirectory(atPath: path)
-                for item in contents {
-                    let fullPath = "\(path)/\(item)"
-                    if fm.fileExists(atPath: fullPath, isDirectory: nil) {
-                        if item.hasSuffix(".app") {
-                            let appPath = fullPath
-                            if let (bundleIdentifier, appName) = getBundleIdentifierAndName(from: appPath) {
-                                bundleIdToName[bundleIdentifier] = appName
-                                bundleIdToPath[bundleIdentifier] = appPath
-                            }
-                        } else {
-                            if let appContents = try? fm.contentsOfDirectory(atPath: fullPath) {
-                                for appItem in appContents {
-                                    if appItem.hasSuffix(".app") {
-                                        let appPath = "\(fullPath)/\(appItem)"
-                                        if let (bundleIdentifier, appName) = getBundleIdentifierAndName(from: appPath) {
-                                            bundleIdToName[bundleIdentifier] = appName
-                                            bundleIdToPath[bundleIdentifier] = appPath
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch {
-                print("Error reading contents of directory \(path): \(error)")
+        guard let workspaceClass = NSClassFromString("LSApplicationWorkspace") as AnyObject?,
+              let defaultWorkspace = workspaceClass.perform(NSSelectorFromString("defaultWorkspace"))?.takeUnretainedValue(),
+              let apps = defaultWorkspace.perform(NSSelectorFromString("allApplications"))?.takeUnretainedValue() as? [AnyObject] else {
+            return
+        }
+
+        for app in apps {
+            guard let bundleIdentifier = app.perform(NSSelectorFromString("bundleIdentifier"))?.takeUnretainedValue() as? String,
+                  let bundleURL = app.perform(NSSelectorFromString("bundleURL"))?.takeUnretainedValue() as? URL else {
+                continue
             }
+
+            let name = app.perform(NSSelectorFromString("localizedName"))?.takeUnretainedValue() as? String
+                ?? app.perform(NSSelectorFromString("bundleName"))?.takeUnretainedValue() as? String
+
+            if let name = name, !name.isEmpty {
+                bundleIdToName[bundleIdentifier] = name
+            }
+
+            bundleIdToPath[bundleIdentifier] = bundleURL.path
         }
     }
     
