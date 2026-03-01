@@ -34,14 +34,19 @@ export async function fetchApps() {
 export async function fetchAppIcons(apps) {
   const iconsArray = await Promise.all(
     apps.map(async item => {
-      const { image, name } = await fetchAppIcon(item.id);
-      let childrenIcons = {};
+      let itemIcon = {};
+      
+      if (item.type !== 'folder') {
+        const { image, name } = await fetchAppIcon(item.id);
+        itemIcon = { [item.id]: { image, name } };
+      }
 
+      let childrenIcons = {};
       if (item.children && item.children.length > 0) {
         childrenIcons = await fetchAppIcons(item.children);
       }
 
-      return { [item.id]: { image, name }, ...childrenIcons };
+      return { ...itemIcon, ...childrenIcons };
     })
   );
 

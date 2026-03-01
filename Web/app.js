@@ -246,7 +246,7 @@ class HomeScreenLayout extends Component {
         return items.slice(0,9).map(item =>
             h('div', {
                 class: 'child application',
-                style: this.state.icons[item.id] ? { backgroundImage: `url(${this.state.icons[item.id].image})` } : {},
+                style: this.state.icons[item.id]?.image ? { backgroundImage: `url(${this.state.icons[item.id].image})` } : {},
             })
         )
     }
@@ -258,7 +258,7 @@ class HomeScreenLayout extends Component {
                 const isSelected = this.state.selectedAppIds.includes(item.id);
                 return h('div', {
                     class: `icon ${item.type}${isSelected ? ' active' : ''}`,
-                    style: item.type !== 'folder' && icons[item.id] ? { backgroundImage: `url(${icons[item.id].image})` } : {},
+                    style: item.type !== 'folder' && icons[item.id]?.image ? { backgroundImage: `url(${icons[item.id].image})` } : {},
                     draggable: item.type === 'folder' || isSelected,
                     onClick: () => this.handleClick(item),
                     onDragStart: () => this.handleDragStart(item),
