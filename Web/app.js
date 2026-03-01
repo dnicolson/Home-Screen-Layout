@@ -21,7 +21,12 @@ class HomeScreenLayout extends Component {
         window.addEventListener('keydown', event => {
             if (event.key === 'Escape') {
                 this.setState({ selectedAppIds: [], currentFolder: null });
+                this.updateURL();
             }
+        });
+
+        window.addEventListener('popstate', () => {
+            this.restoreFromURL();
         });
 
         const apps = await fetchApps();
@@ -30,7 +35,9 @@ class HomeScreenLayout extends Component {
             return;
         }
         const icons = await fetchAppIcons(apps);
-        this.setState({ isLoading: false, items: apps, originalItems: structuredClone(apps), icons });
+        this.setState({ isLoading: false, items: apps, originalItems: structuredClone(apps), icons }, () => {
+            this.restoreFromURL();
+        });
     }
 
     handleDragStart = (item) => {
@@ -83,7 +90,9 @@ class HomeScreenLayout extends Component {
         const { selectedAppIds } = this.state;
 
         if (item.type === 'folder') {
-            this.setState({ currentFolder: item, selectedAppIds: [] });
+            this.setState({ currentFolder: item, selectedAppIds: [] }, () => {
+                this.updateURL();
+            });
         } else {
             const appId = item.id;
             const isSelected = selectedAppIds.includes(appId);
@@ -97,7 +106,9 @@ class HomeScreenLayout extends Component {
     };
 
     handleBack = () => {
-        this.setState({ currentFolder: null, selectedAppIds: [] });
+        this.setState({ currentFolder: null, selectedAppIds: [] }, () => {
+            this.updateURL();
+        });
     }
 
     handleDeleteFolder = (e) => {
@@ -105,8 +116,9 @@ class HomeScreenLayout extends Component {
         const newItems = items.filter(item => {
             return item.id !== this.state.currentFolder.id
         });
-        this.setState({ items: newItems });
-        this.handleBack();
+        this.setState({ items: newItems }, () => {
+            this.handleBack();
+        });
     }
 
     handleNewFolder = () => {
@@ -191,6 +203,34 @@ class HomeScreenLayout extends Component {
 
     hasPendingChanges = () => {
         return JSON.stringify(this.state.items) !== JSON.stringify(this.state.originalItems);
+    }
+
+    updateURL = () => {
+        const { currentFolder } = this.state;
+        const url = new URL(window.location);
+        
+        if (currentFolder) {
+            url.hash = `folder=${currentFolder.id}`;
+        } else {
+            url.hash = '';
+        }
+        
+        window.history.pushState({}, '', url);
+    }
+
+    restoreFromURL = () => {
+        const hash = window.location.hash.slice(1);
+        const params = new URLSearchParams(hash);
+        const folderId = params.get('folder');
+        
+        if (folderId) {
+            const folder = this.state.items.find(item => item.id === folderId && item.type === 'folder');
+            if (folder) {
+                this.setState({ currentFolder: folder, selectedAppIds: [] });
+            }
+        } else {
+            this.setState({ currentFolder: null, selectedAppIds: [] });
+        }
     }
 
     renderFolderBackground(items) {
